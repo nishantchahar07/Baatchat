@@ -62,9 +62,55 @@ export async function signup(req ,  res) {
 }
 
 export async  function login(req, res) {
-  res.send("Login endpoint");
+  const { email, password } = req.body;
+
+  try {
+         if(!email || !password) {
+            return res.status(400).json({ message: "Email and password are required" })};
+          
+
+          const user = await User.findOne({ email });
+          if (!user) { 
+            return res.status(400).json({ message: "Invalid email" });
+          } 
+          
+          const isPasswordValid = await user.matchPassword(password);
+          if (!isPasswordValid) {
+            return res.status(400).json({ message: "Invalid password" });
+          }
+
+           const token = jwt.sign({userid : user._id}, process.env.JWT_SECRET, {
+        expiresIn: '7d'});
+
+     res.cookie('jwt', token, {
+        httpOnly: true,  // prevent xss attacks
+        secure: process.env.NODE_ENV === 'production', 
+        maxAge: 7 * 24 * 60 * 60 * 1000 ,// 7 days 
+        sameSite: 'strict' // prevent CSRF attacks
+    });
+
+          res.status(200).json({
+            message: "Login successful",
+            user
+
+          
+  
+});
+
+  }
+
+  catch(error) {
+    console.error("Login error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 }   
 
 export function logout(req, res) {
-  res.send("Logout endpoint");
+  res.clearCookie('jwt', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict'
+  });
+
+  res.status(200).json({ message: "Logout successful" });
 }

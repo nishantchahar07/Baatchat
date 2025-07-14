@@ -68,7 +68,12 @@ next();
     }
 
 
-})
+});
+
+userSchema.methods.matchPassword = async function(enterPassword) {
+    return await bcrypt.compare(enterPassword, this.password);
+    
+}
 
 
 export default mongoose.model("User", userSchema);
