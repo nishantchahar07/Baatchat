@@ -105,6 +105,7 @@ export async  function login(req, res) {
   }
 }   
 
+// Logout function to clear the JWT cookie
 export function logout(req, res) {
   res.clearCookie('jwt', {
     httpOnly: true,
