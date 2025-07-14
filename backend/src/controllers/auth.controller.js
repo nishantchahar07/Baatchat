@@ -34,6 +34,20 @@ export async function signup(req ,  res) {
        
     });
 
+    try{
+      await upsertStreamUser({
+        id: newUser._id.toString(),
+        name: newUser.fullName,
+        image: newUser.profilePicture
+      });
+      console.log(`Stream user upserted successfully${newUser.firstName}`);
+
+    }
+    catch(error){
+      console.error("Error upserting Stream user:", error);
+      
+    }
+
     const token = jwt.sign({userid : newUser._id}, process.env.JWT_SECRET, {
         expiresIn: '7d'});
 
