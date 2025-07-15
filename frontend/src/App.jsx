@@ -1,21 +1,39 @@
-import { useEffect } from "react";
+
 import { Toaster } from "react-hot-toast"
 import { Route, Routes } from "react-router"
+import HomePage from "./pages/HomePage";
+import SignUpPage from "./pages/SignUpPage";
+import LoginPage from "./pages/LoginPage";      
+import NotificationPage from "./pages/NotificationPage";
+import CallPage from "./pages/CallPage";
+import ChatPage from "./pages/ChatPage";
+import OnboardingPage from "./pages/OnboardingPage";
+import { useQuery } from "@tanstack/react-query";
+import axiosInstance  from "../src/lib/axios";
+
 
 function App() {
-  const [data , setData] = useState([]);
-  const [isLoading , setIsLoading ] = useState(false);
-  const [error , setError] = useState(null);
+ //tanstack query -->  give functionality to fetch data from server and cache it
+const { data, isLoading, error } = useQuery({
+    queryKey: ['todos'],
+    queryFn: async () => {
+      const res= await axiosInstance.get('/auth/me');
+      return res.data;
+    },
+    retry: false, // Disable retry on failure
+  });
 
-  useEffect(() => {
-    const getData = async () => {}});
-
-
+  console.log("data", data);
+  console.log("isLoading", isLoading);
+  console.log("error", error);
+    
 
    return (
    <>
-   <div claddName='h-screen' data-theme="lemonade">
-//TODO : read doc about react query tanstack query 
+   <div className='h-screen' data-theme="lemonade">
+
+    {/* read tanstack query  */}
+    
     <Routes>
       <Route path ="/" element={<HomePage/>} />
       <Route path ="/signup" element={<SignUpPage/>} />
