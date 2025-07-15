@@ -48,7 +48,7 @@ export async function signup(req ,  res) {
       
     }
 
-    const token = jwt.sign({userid : newUser._id}, process.env.JWT_SECRET, {
+    const token = jwt.sign({userId : newUser._id}, process.env.JWT_SECRET, {
         expiresIn: '7d'});
 
      res.cookie('jwt', token, {
@@ -93,7 +93,7 @@ export async  function login(req, res) {
             return res.status(400).json({ message: "Invalid password" });
           }
 
-           const token = jwt.sign({userid : user._id}, process.env.JWT_SECRET, {
+           const token = jwt.sign({userId : user._id}, process.env.JWT_SECRET, {
         expiresIn: '7d'});
 
      res.cookie('jwt', token, {
@@ -128,4 +128,45 @@ export function logout(req, res) {
   });
 
   res.status(200).json({ message: "Logout successful" });
+}
+
+
+export async  function onboard(req, res) {
+
+try{
+
+  const userId = req.user._id;
+const { fullName, bio , nativeLanguage , learningLanguage , location  } = req.body;
+  if (!fullName || !bio || !nativeLanguage || !learningLanguage || !location) {
+    return res.status(400).json({ message: "All fields are required" , missingFields: [  !fullName && "fullName"  , !bio && "bio",  !nativeLanguage &&  "nativeLanguage", !learningLanguage &&  "learningLanguage", !location  && "location"].filter(Boolean) });}
+  
+    const updateUser = await User.findByIdAndUpdate(userId, {
+      ...req.body,
+      isOnboarded: true
+    }, { new: true });
+
+    if (!updateUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+
+ 
+
+
+  // Upsert the user in Stream
+  // await upsertStreamUser({
+  //   id: user._id.toString(),
+  //   name: user.fullName,
+  //   image: user.profilePicture
+  // });
+
+  res.status(200).json({ message: "Onboarding successful", updateUser });
+
+}
+
+catch(error) {
+    console.error("Onboarding error:", error);
+   
+  }
+
 }
