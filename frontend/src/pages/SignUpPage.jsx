@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ShipWheelIcon } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { Link } from "react-router";
 
 import useSignUp from "../hooks/useSignUp";
@@ -25,17 +25,17 @@ const SignUpPage = () => {
       data-theme="forest"
     >
       <div className="border border-primary/25 flex flex-col lg:flex-row w-full max-w-5xl mx-auto bg-base-100 rounded-xl shadow-lg overflow-hidden">
-        {/* SIGNUP FORM - LEFT SIDE */}
+       
         <div className="w-full lg:w-1/2 p-4 sm:p-8 flex flex-col">
           {/* LOGO */}
           <div className="mb-4 flex items-center justify-start gap-2">
-            <ShipWheelIcon className="size-9 text-primary" />
+            <Sparkles className="size-9 text-primary" />
             <span className="text-3xl font-bold font-mono bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary tracking-wider">
-              Streamify
+              BaatChat
             </span>
           </div>
 
-          {/* ERROR MESSAGE IF ANY */}
+          
           {error && (
             <div className="alert alert-error mb-4">
               <span>{error.response.data.message}</span>
@@ -48,12 +48,12 @@ const SignUpPage = () => {
                 <div>
                   <h2 className="text-xl font-semibold">Create an Account</h2>
                   <p className="text-sm opacity-70">
-                    Join Streamify and start your language learning adventure!
+                  “Chit-Chat? Nah. This is BaatChat.”
                   </p>
                 </div>
 
                 <div className="space-y-3">
-                  {/* FULLNAME */}
+               
                   <div className="form-control w-full">
                     <label className="label">
                       <span className="label-text">Full Name</span>
@@ -144,9 +144,9 @@ const SignUpPage = () => {
             </div>
 
             <div className="text-center space-y-3 mt-6">
-              <h2 className="text-xl font-semibold">Connect with language partners worldwide</h2>
+              <h2 className="text-xl font-semibold">Not just chatting, it’s Baat that connects cultures – BaatChat.</h2>
               <p className="opacity-70">
-                Practice conversations, make friends, and improve your language skills together
+              Practice real conversations. Make real friends. Learn together – BaatChat.
               </p>
             </div>
           </div>
