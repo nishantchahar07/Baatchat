@@ -18,7 +18,7 @@ router.post("/onboarding", protectRoute, onboard);
 //send reset-password email
 //reset-password
 
-TODO: router.get("/me", protectRoute, (req, res) => {
+router.get("/me", protectRoute, (req, res) => {
   res.status(200).json({ message: "User authenticated", user: req.user });
 });
 
