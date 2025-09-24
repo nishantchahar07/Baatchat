@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { LANGUAGE_TO_FLAG } from "../constants";
+import { VideoIcon } from "lucide-react";
 
 const FriendCard = ({ friend }) => {
   return (
@@ -24,9 +25,14 @@ const FriendCard = ({ friend }) => {
           </span>
         </div>
 
-        <Link to={`/chat/${friend._id}`} className="btn btn-outline w-full">
-          Message
-        </Link>
+        <div className="flex gap-2">
+          <Link to={`/chat/${friend._id}`} className="btn btn-outline flex-1">
+            Message
+          </Link>
+          <Link to={`/call/${friend._id}`} className="btn btn-success">
+            <VideoIcon className="size-4" />
+          </Link>
+        </div>
       </div>
     </div>
   );
