@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { LANGUAGE_TO_FLAG } from "../constants";
-import { VideoIcon, MessageCircle, Globe } from "lucide-react";
+import { VideoIcon, MessageCircle, Globe, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "./ui/Card";
 import { Button } from "./ui/Button";
@@ -55,6 +55,11 @@ const FriendCard = ({ friend }) => {
               <Link to={`/chat/${friend._id}`}>
                 <MessageCircle className="h-4 w-4 mr-2 group-hover/btn:scale-110 transition-transform" />
                 Message
+              </Link>
+            </Button>
+            <Button asChild variant="secondary" size="icon" className="group/btn">
+              <Link to={`/profile/${friend._id}`}>
+                <User className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
               </Link>
             </Button>
             <Button asChild variant="success" size="icon" className="group/btn">

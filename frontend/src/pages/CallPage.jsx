@@ -20,7 +20,7 @@ const CallPage = () => {
   useEffect(() => {
     if (token && authUser && !client) {
       const videoClient = new StreamVideoClient({
-        apiKey: process.env.REACT_APP_STREAM_API_KEY || "3whrp8a4msd6",
+        apiKey: import.meta.env.VITE_STREAM_API_KEY,
         token: token.token,
         user: {
           id: authUser._id,

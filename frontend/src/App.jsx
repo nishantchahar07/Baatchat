@@ -11,6 +11,7 @@ const NotificationsPage = lazy(() => import("./pages/NotificationsPage.jsx"));
 const CallPage = lazy(() => import("./pages/CallPage.jsx"));
 const ChatPage = lazy(() => import("./pages/ChatPage.jsx"));
 const OnboardingPage = lazy(() => import("./pages/OnboardingPage.jsx"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage.jsx"));
 
 import { Toaster } from "react-hot-toast";
 
@@ -94,6 +95,18 @@ const App = () => {
             }
           />
 
+          {/* Profile route */}
+          <Route
+            path="/profile/:id?"
+            element={
+              <ProtectedRoute>
+                <Layout showSidebar={true}>
+                  <ProfilePage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+  
           {/* Onboarding route - requires auth but not onboarding */}
           <Route
             path="/onboarding"

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getFriendRequests, acceptFriendRequest } from "../lib/api";
+import { getFriendRequests, acceptFriendRequest, rejectFriendRequest } from "../lib/api";
 import { Check, X } from "lucide-react";
 import NoNotificationsFound from "../components/NoNotificationFound";
 
@@ -19,8 +19,19 @@ const NotificationPage = () => {
     },
   });
 
+  const rejectMutation = useMutation({
+    mutationFn: rejectFriendRequest,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
+    },
+  });
+
   const handleAccept = (requestId) => {
     acceptMutation.mutate(requestId);
+  };
+
+  const handleReject = (requestId) => {
+    rejectMutation.mutate(requestId);
   };
 
   return (
@@ -70,20 +81,36 @@ const NotificationPage = () => {
                       </span>
                     </div>
                   </div>
-                  <button
-                    onClick={() => handleAccept(request._id)}
-                    disabled={acceptMutation.isPending}
-                    className="btn btn-success btn-sm"
-                  >
-                    {acceptMutation.isPending ? (
-                      <span className="loading loading-spinner loading-xs"></span>
-                    ) : (
-                      <>
-                        <Check className="size-4" />
-                        Accept
-                      </>
-                    )}
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleAccept(request._id)}
+                      disabled={acceptMutation.isPending}
+                      className="btn btn-success btn-sm"
+                    >
+                      {acceptMutation.isPending ? (
+                        <span className="loading loading-spinner loading-xs"></span>
+                      ) : (
+                        <>
+                          <Check className="size-4" />
+                          Accept
+                        </>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => handleReject(request._id)}
+                      disabled={rejectMutation.isPending}
+                      className="btn btn-error btn-sm"
+                    >
+                      {rejectMutation.isPending ? (
+                        <span className="loading loading-spinner loading-xs"></span>
+                      ) : (
+                        <>
+                          <X className="size-4" />
+                          Reject
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
