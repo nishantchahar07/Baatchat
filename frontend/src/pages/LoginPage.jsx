@@ -1,6 +1,12 @@
 import { useState } from "react";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router";
+import { motion } from "framer-motion";
+import { Button } from "../components/ui/Button";
+import { Input } from "../components/ui/Input";
+import { Card, CardContent } from "../components/ui/Card";
+import FadeIn from "../components/animations/FadeIn";
+import SlideIn from "../components/animations/SlideIn";
 
 import useLogin from "../hooks/useLogin";
 
@@ -9,6 +15,7 @@ const LoginPage = () => {
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const { isPending, error, loginMutation } = useLogin();
 
@@ -18,113 +25,160 @@ const LoginPage = () => {
   };
 
   return (
-    <div
-      className="h-screen flex items-center justify-center p-4 sm:p-6 md:p-8"
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+      className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-base-200/50 to-base-300/30"
       data-theme="forest"
     >
-      <div className="border border-primary/25 flex flex-col lg:flex-row w-full max-w-5xl mx-auto bg-base-100 rounded-xl shadow-lg overflow-hidden">
+      <div className="w-full max-w-6xl mx-auto">
+        <Card className="overflow-hidden border-primary/20 shadow-2xl bg-base-100/95 backdrop-blur-xl">
+          <div className="flex flex-col lg:flex-row">
 
-        <div className="w-full lg:w-1/2 p-4 sm:p-8 flex flex-col">
-          {/* LOGO */}
-          <div className="mb-4 flex items-center justify-start gap-2">
-            <Sparkles className="size-9 text-primary" />
-            <span className="text-3xl font-bold font-mono bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary tracking-wider">
-              BaatChat
-            </span>
-          </div>
-
-
-          {error && (
-            <div className="alert alert-error mb-4">
-              <span>{error.response.data.message}</span>
-            </div>
-          )}
-
-          <div className="w-full">
-            <form onSubmit={handleLogin}>
-              <div className="space-y-4">
-                <div>
-                  <h2 className="text-xl font-semibold">Welcome Back</h2>
-                  <p className="text-sm opacity-70">
-                    "Chit-Chat? Nah. This is BaatChat."
-                  </p>
-                </div>
-
-                <div className="space-y-3">
-
-                  {/* EMAIL */}
-                  <div className="form-control w-full">
-                    <label className="label">
-                      <span className="label-text">Email</span>
-                    </label>
-                    <input
-                      type="email"
-                      placeholder="john@gmail.com"
-                      className="input input-bordered w-full"
-                      value={loginData.email}
-                      onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
-                      required
-                    />
+            {/* LEFT SIDE - FORM */}
+            <div className="w-full lg:w-1/2 p-8 lg:p-12">
+              <FadeIn>
+                {/* LOGO */}
+                <div className="mb-8 flex items-center justify-start gap-3">
+                  <motion.div
+                    whileHover={{ rotate: 180, scale: 1.1 }}
+                    transition={{ duration: 0.3 }}
+                    className="p-3 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20"
+                  >
+                    <Sparkles className="size-8 text-primary" />
+                  </motion.div>
+                  <div>
+                    <span className="text-3xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent tracking-tight">
+                      BaatChat
+                    </span>
+                    <p className="text-sm text-base-content/60 font-medium">Connect & Learn</p>
                   </div>
-                  {/* PASSWORD */}
-                  <div className="form-control w-full">
-                    <label className="label">
-                      <span className="label-text">Password</span>
-                    </label>
-                    <input
-                      type="password"
-                      placeholder="********"
-                      className="input input-bordered w-full"
-                      value={loginData.password}
-                      onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-                      required
-                    />
+                </div>
+              </FadeIn>
+
+
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-6 p-4 rounded-xl bg-error/10 border border-error/20 text-error"
+                >
+                  <span className="text-sm font-medium">{error.response.data.message}</span>
+                </motion.div>
+              )}
+
+              <SlideIn direction="left">
+                <form onSubmit={handleLogin} className="space-y-6">
+                  <div className="space-y-2">
+                    <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                      Welcome Back
+                    </h2>
+                    <p className="text-base-content/70">
+                      "Chit-Chat? Nah. This is BaatChat."
+                    </p>
                   </div>
 
-                </div>
+                  <div className="space-y-5">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-base-content/80">
+                        Email Address
+                      </label>
+                      <Input
+                        type="email"
+                        placeholder="john@gmail.com"
+                        value={loginData.email}
+                        onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                        required
+                      />
+                    </div>
 
-                <button className="btn btn-primary w-full" type="submit">
-                  {isPending ? (
-                    <>
-                      <span className="loading loading-spinner loading-xs"></span>
-                      Loading...
-                    </>
-                  ) : (
-                    "Sign In"
-                  )}
-                </button>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-base-content/80">
+                        Password
+                      </label>
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="********"
+                          className="pr-12"
+                          value={loginData.password}
+                          onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/50 hover:text-base-content transition-colors"
+                        >
+                          {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
 
-                <div className="text-center mt-4">
-                  <p className="text-sm">
+                  <Button type="submit" className="w-full h-12 text-base" disabled={isPending}>
+                    {isPending ? (
+                      <>
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                        />
+                        Signing In...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-5 h-5 mr-2" />
+                        Sign In
+                      </>
+                    )}
+                  </Button>
+
+                  <div className="text-center pt-4">
+                    <p className="text-sm text-base-content/70">
                     Don't have an account?{" "}
-                    <Link to="/signup" className="text-primary hover:underline">
+                      <Link to="/signup" className="text-primary hover:underline font-medium">
                       Sign up
                     </Link>
                   </p>
+                  </div>
+                </form>
+              </SlideIn>
+            </div>
+
+            {/* RIGHT SIDE - ILLUSTRATION */}
+            <div className="hidden lg:flex w-full lg:w-1/2 bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10 items-center justify-center p-12">
+              <SlideIn direction="right" delay={0.3}>
+                <div className="max-w-md text-center">
+                  <motion.div 
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.5, duration: 0.6 }}
+                    className="relative aspect-square max-w-sm mx-auto mb-8"
+                  >
+                    <img 
+                      src="/signup.png" 
+                      alt="Language connection illustration" 
+                      className="w-full h-full object-contain drop-shadow-2xl" 
+                    />
+                  </motion.div>
+
+                  <div className="space-y-4">
+                    <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent leading-tight">
+                      Not just chatting, it's Baat that connects cultures
+                    </h2>
+                    <p className="text-base-content/70 leading-relaxed">
+                      Practice real conversations. Make real friends. Learn together with BaatChat.
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        {/* LOGIN FORM - RIGHT SIDE */}
-        <div className="hidden lg:flex w-full lg:w-1/2 bg-primary/10 items-center justify-center">
-          <div className="max-w-md p-8">
-            {/* Illustration */}
-            <div className="relative aspect-square max-w-sm mx-auto">
-              <img src="/signup.png" alt="Language connection illustration" className="w-full h-full" />
-            </div>
-
-            <div className="text-center space-y-3 mt-6">
-              <h2 className="text-xl font-semibold">Not just chatting, it's Baat that connects cultures – BaatChat.</h2>
-              <p className="opacity-70">
-                Practice real conversations. Make real friends. Learn together – BaatChat.
-              </p>
+              </SlideIn>
             </div>
           </div>
-        </div>
+        </Card>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
