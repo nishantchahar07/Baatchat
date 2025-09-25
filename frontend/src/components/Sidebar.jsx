@@ -113,7 +113,7 @@ const Sidebar = () => {
           </motion.div>
         </div>
       </FadeIn>
-    </aside>
+    </motion.aside>
   );
 };
 export default Sidebar;
