@@ -4,6 +4,7 @@ import { BellIcon, HomeIcon, ShipWheelIcon, UsersIcon, Sparkles } from "lucide-r
 import { motion } from "framer-motion";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/Avatar";
 import FadeIn from "./animations/FadeIn";
+import ThemeSelector from "./ThemeSelector";
 
 const Sidebar = () => {
   const { authUser } = useAuthUser();
@@ -24,21 +25,24 @@ const Sidebar = () => {
     >
       <FadeIn delay={0.2}>
         <div className="p-6 border-b border-primary/10">
-          <Link to="/" className="flex items-center gap-3 group">
-            <motion.div
-              whileHover={{ rotate: 180, scale: 1.1 }}
-              transition={{ duration: 0.3 }}
-              className="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20"
-            >
-              <Sparkles className="size-8 text-primary" />
-            </motion.div>
-            <div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent tracking-tight">
-                BaatChat
-              </span>
-              <p className="text-xs text-base-content/60 font-medium">Connect & Learn</p>
-            </div>
-          </Link>
+          <div className="flex items-center justify-between">
+            <Link to="/" className="flex items-center gap-3 group">
+              <motion.div
+                whileHover={{ rotate: 180, scale: 1.1 }}
+                transition={{ duration: 0.3 }}
+                className="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20"
+              >
+                <Sparkles className="size-8 text-primary" />
+              </motion.div>
+              <div>
+                <span className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent tracking-tight">
+                  BaatChat
+                </span>
+                <p className="text-xs text-base-content/60 font-medium">Connect & Learn</p>
+              </div>
+            </Link>
+            <ThemeSelector />
+          </div>
         </div>
       </FadeIn>
 
