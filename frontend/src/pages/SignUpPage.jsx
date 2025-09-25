@@ -64,7 +64,9 @@ const SignUpPage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="mb-6 p-4 rounded-xl bg-error/10 border border-error/20 text-error"
                 >
-                  <span className="text-sm font-medium">{error.response.data.message}</span>
+                  <span className="text-sm font-medium">
+                    {error.response?.data?.message || error.message || "An error occurred. Please try again."}
+                  </span>
                 </motion.div>
               )}
 
