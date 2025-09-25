@@ -21,7 +21,7 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (token && authUser && !client) {
-      const chatClient = StreamChat.getInstance(process.env.REACT_APP_STREAM_API_KEY || "3whrp8a4msd6");
+      const chatClient = StreamChat.getInstance(import.meta.env.VITE_STREAM_API_KEY);
 
       chatClient.connectUser(
         {

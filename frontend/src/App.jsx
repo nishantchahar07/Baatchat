@@ -13,104 +13,90 @@ import { Toaster } from "react-hot-toast";
 import PageLoader from "./components/PageLoader.jsx";
 import useAuthUser from "./hooks/useAuthUser.js";
 import Layout from "./components/Layout.jsx";
-// import { useThemeStore } from "./store/useThemeStore.js";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import { useThemeStore } from "./store/useThemeStore.js";
 
 const App = () => {
-  const { isLoading, authUser } = useAuthUser();
-  // const { theme } = useThemeStore();
-
-  const isAuthenticated = Boolean(authUser);
-  const isOnboarded = authUser?.isOnboarded;
-
-  if (isLoading) return <PageLoader />;
+  const { theme } = useThemeStore();
 
   return (
-    <div className="h-screen" >
+    <div className="h-screen" data-theme={theme}>
       <Routes>
-        <Route
-          path="/"
-          element={
-            isAuthenticated && isOnboarded ? (
-              <Layout showSidebar={true}>
-                <HomePage />
-              </Layout>
-            ) : (
-              <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />
-            )
-          }
-        />
-        <Route
-          path="/friends"
-          element={
-            isAuthenticated && isOnboarded ? (
-              <Layout showSidebar={true}>
-                <HomePage />
-              </Layout>
-            ) : (
-              <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />
-            )
-          }
-        />
+        {/* Public routes */}
         <Route
           path="/signup"
           element={
-            !isAuthenticated ? <SignUpPage /> : <Navigate to={isOnboarded ? "/" : "/onboarding"} />
+            <ProtectedRoute requireAuth={false}>
+              <SignUpPage />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/login"
           element={
-            !isAuthenticated ? <LoginPage /> : <Navigate to={isOnboarded ? "/" : "/onboarding"} />
+            <ProtectedRoute requireAuth={false}>
+              <LoginPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected routes requiring auth and onboarding */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Layout showSidebar={true}>
+                <HomePage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/friends"
+          element={
+            <ProtectedRoute>
+              <Layout showSidebar={true}>
+                <HomePage />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/notifications"
           element={
-            isAuthenticated && isOnboarded ? (
+            <ProtectedRoute>
               <Layout showSidebar={true}>
                 <NotificationsPage />
               </Layout>
-            ) : (
-              <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />
-            )
+            </ProtectedRoute>
           }
         />
         <Route
           path="/call/:id"
           element={
-            isAuthenticated && isOnboarded ? (
+            <ProtectedRoute>
               <CallPage />
-            ) : (
-              <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />
-            )
+            </ProtectedRoute>
           }
         />
-
         <Route
           path="/chat/:id"
           element={
-            isAuthenticated && isOnboarded ? (
+            <ProtectedRoute>
               <Layout showSidebar={false}>
                 <ChatPage />
               </Layout>
-            ) : (
-              <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />
-            )
+            </ProtectedRoute>
           }
         />
 
+        {/* Onboarding route - requires auth but not onboarding */}
         <Route
           path="/onboarding"
           element={
-            isAuthenticated ? (
-              !isOnboarded ? (
-                <OnboardingPage />
-              ) : (
-                <Navigate to="/" />
-              )
-            ) : (
-              <Navigate to="/login" />
-            )
+            <ProtectedRoute requireOnboarding={false}>
+              <OnboardingPage />
+            </ProtectedRoute>
           }
         />
       </Routes>
