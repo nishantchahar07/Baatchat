@@ -15,7 +15,6 @@ const ProfilePage = lazy(() => import("./pages/ProfilePage.jsx"));
 
 import { Toaster } from "react-hot-toast";
 
-import useAuthUser from "./hooks/useAuthUser.js";
 import Layout from "./components/Layout.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { useThemeStore } from "./store/useThemeStore.js";
