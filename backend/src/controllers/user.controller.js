@@ -1,5 +1,12 @@
 import User from "../models/User.js";
 import FriendRequest from "../models/FriendRequest.js";
+import multer from "multer";
+import { v2 as cloudinary } from "cloudinary";
+
+// Configure Cloudinary
+cloudinary.config({
+  cloudinary_url: process.env.CLOUDINARY_URL,
+});
 
 export async function getRecommendedUsers(req, res) {
   try {
@@ -171,3 +178,118 @@ export async function getOutgoingFriendReqs(req, res) {
     res.status(500).json({ message: "Internal Server Error" });
   }
 }
+
+export async function updateProfile(req, res) {
+  try {
+    const userId = req.user.id;
+    const { fullName, bio, nativeLanguage, learningLanguage, location, profilePic } = req.body;
+
+    // If profilePic is provided, update it directly
+    if (profilePic !== undefined) {
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { profilePic: profilePic },
+        { new: true }
+      ).select("-password");
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      return res.status(200).json(updatedUser);
+    }
+
+    // Validate required fields for other updates
+    if (!fullName || fullName.trim() === "") {
+      return res.status(400).json({ message: "Full name is required" });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        fullName: fullName.trim(),
+        bio: bio ? bio.trim() : "",
+        nativeLanguage: nativeLanguage ? nativeLanguage.trim() : "",
+        learningLanguage: learningLanguage ? learningLanguage.trim() : "",
+        location: location ? location.trim() : "",
+      },
+      { new: true }
+    ).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error("Error in updateProfile controller", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export async function getUserById(req, res) {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error in getUserById controller", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+const upload = multer({ storage: multer.memoryStorage() });
+
+export async function uploadProfilePic(req, res) {
+  try {
+    const userId = req.user.id;
+    console.log("uploadProfilePic called for user:", userId);
+    console.log("req.file:", req.file);
+
+    if (!req.file) {
+      console.log("No file uploaded");
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    console.log("Uploading to Cloudinary...");
+    // Upload to Cloudinary
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: "profile_pics",
+          public_id: `user_${userId}`,
+          overwrite: true,
+        },
+        (error, result) => {
+          if (error) {
+            console.error("Cloudinary upload error:", error);
+            reject(error);
+          } else {
+            console.log("Cloudinary upload success:", result.secure_url);
+            resolve(result);
+          }
+        }
+      );
+      stream.end(req.file.buffer);
+    });
+
+    console.log("Updating user profilePic");
+    // Update user's profilePic
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { profilePic: result.secure_url },
+      { new: true }
+    ).select("-password");
+
+    console.log("Profile pic updated successfully");
+    res.status(200).json({ profilePic: result.secure_url, user: updatedUser });
+  } catch (error) {
+    console.error("Error in uploadProfilePic controller", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export { upload };

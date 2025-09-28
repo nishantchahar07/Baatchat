@@ -8,6 +8,10 @@ import {
   getRecommendedUsers,
   rejectFriendRequest,
   sendFriendRequest,
+  updateProfile,
+  uploadProfilePic,
+  getUserById,
+  upload,
 } from "../controllers/user.controller.js";
 const router = express.Router();
 
@@ -20,5 +24,9 @@ router.get("/friend-request/:id/accept", acceptFriendRequest);
 router.get("/friend-request/:id/reject", rejectFriendRequest);
 router.get("/friend-requests", getFriendRequests);
 router.get("/outgoing-friend-requests", getOutgoingFriendReqs);
+
+router.put("/profile", updateProfile);
+router.get("/:id", getUserById);
+router.post("/upload-profile-pic", upload.single("profilePic"), uploadProfilePic);
 
 export default router;
