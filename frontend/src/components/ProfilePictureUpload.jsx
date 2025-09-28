@@ -43,7 +43,6 @@ const ProfilePictureUpload = ({ currentPic, onUpdate, initials, user, currentUse
   };
 
   const handleReset = async () => {
-    console.log(user, currentUserId);
     try {
       await axiosInstance.put("/users/profile", { profilePic: "" });
       onUpdate("");

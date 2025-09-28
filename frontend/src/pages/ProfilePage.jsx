@@ -45,8 +45,6 @@ const ProfilePage = () => {
     enabled: true,
   });
 
-  console.log("ProfilePage - user after query:", user);
-
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -60,7 +58,6 @@ const ProfilePage = () => {
 
   const currentUserId = user?._id;
   const isOwnProfile = user?._id === authUser?._id;
-  console.log("ProfilePage - user:", user, "authUser:", authUser, "isOwnProfile:", isOwnProfile);
 
   useEffect(() => {
     if (user) {

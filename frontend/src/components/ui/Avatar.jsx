@@ -1,5 +1,6 @@
 import { forwardRef } from "react";
 import { cn } from "../../lib/cn";
+import { generateAvatarSVG } from "../../lib/utils";
 
 const Avatar = forwardRef(({ className, ...props }, ref) => (
   <div
@@ -13,22 +14,24 @@ const Avatar = forwardRef(({ className, ...props }, ref) => (
 ));
 Avatar.displayName = "Avatar";
 
-const AvatarImage = forwardRef(({ className, ...props }, ref) => (
-  <img
-    ref={ref}
-    className={cn("aspect-square h-full w-full object-cover", className)}
-    {...props}
-  />
-));
+const AvatarImage = forwardRef(({ className, src, ...props }, ref) => {
+  if (!src) return null;
+  return (
+    <img
+      ref={ref}
+      className={cn("aspect-square h-full w-full object-cover", className)}
+      src={src}
+      {...props}
+    />
+  );
+});
 AvatarImage.displayName = "AvatarImage";
 
-const AvatarFallback = forwardRef(({ className, ...props }, ref) => (
+const AvatarFallback = forwardRef(({ className, name, children, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn(
-      "flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 text-sm font-medium text-primary",
-      className
-    )}
+    className={cn("aspect-square h-full w-full flex items-center justify-center", className)}
+    dangerouslySetInnerHTML={{ __html: atob(generateAvatarSVG(name).split(',')[1]) }}
     {...props}
   />
 ));

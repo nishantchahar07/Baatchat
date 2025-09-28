@@ -8,7 +8,7 @@ import FadeIn from "./animations/FadeIn";
 import ThemeSelector from "./ThemeSelector";
 
 const Sidebar = () => {
-  const { authUser } = useAuthUser();
+  const { authUser, isLoading } = useAuthUser();
   const location = useLocation();
   const currentPath = location.pathname;
 
@@ -94,30 +94,40 @@ const Sidebar = () => {
       {/* USER PROFILE SECTION */}
       <FadeIn delay={0.8}>
         <div className="p-4 border-t border-primary/10 mt-auto">
-          <Link to="/profile">
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/10 cursor-pointer"
-            >
-            <Avatar className="h-12 w-12">
-              <AvatarImage src={authUser?.profilePic || generateAvatarSVG(authUser?.fullName?.split(' ').map(n => n[0]).join('').toUpperCase())} alt="User Avatar" />
-              <AvatarFallback>
-                {authUser?.fullName?.split(' ').map(n => n[0]).join('').toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold text-sm truncate">{authUser?.fullName}</p>
-              <div className="flex items-center gap-2">
-                <motion.div
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="w-2 h-2 rounded-full bg-success"
-                />
-                <p className="text-xs text-success font-medium">Online</p>
+          {isLoading ? (
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/10">
+              <div className="h-12 w-12 rounded-full bg-gray-300 animate-pulse"></div>
+              <div className="flex-1 min-w-0">
+                <div className="h-4 bg-gray-300 rounded animate-pulse mb-2"></div>
+                <div className="h-3 bg-gray-300 rounded animate-pulse w-16"></div>
               </div>
             </div>
-          </motion.div>
-          </Link>
+          ) : (
+            <Link to="/profile">
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/10 cursor-pointer"
+              >
+                <Avatar className="h-12 w-12" name={authUser?.fullName}>
+                  <AvatarImage src={authUser?.profilePic || generateAvatarSVG(authUser?.fullName)} alt="User Avatar" />
+                  <AvatarFallback name={authUser?.fullName}>
+                    {authUser?.fullName?.split(' ').map(n => n[0]).join('').toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-sm truncate">{authUser?.fullName}</p>
+                  <div className="flex items-center gap-2">
+                    <motion.div
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="w-2 h-2 rounded-full bg-success"
+                    />
+                    <p className="text-xs text-success font-medium">Online</p>
+                  </div>
+                </div>
+              </motion.div>
+            </Link>
+          )}
         </div>
       </FadeIn>
     </motion.aside>
