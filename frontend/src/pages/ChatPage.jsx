@@ -55,6 +55,14 @@ const ChatPage = () => {
     };
   }, [client, authUser, receiverId, channel]);
 
+  useEffect(() => {
+    return () => {
+      if (client) {
+        client.disconnectUser();
+      }
+    };
+  }, [client]);
+
   if (tokenLoading || !client || !channel) {
     return <ChatLoader />;
   }
