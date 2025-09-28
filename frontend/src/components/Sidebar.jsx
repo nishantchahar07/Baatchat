@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router";
 import useAuthUser from "../hooks/useAuthUser";
+import { generateAvatarSVG } from "../lib/utils";
 import { BellIcon, HomeIcon, ShipWheelIcon, UsersIcon, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/Avatar";
@@ -93,12 +94,13 @@ const Sidebar = () => {
       {/* USER PROFILE SECTION */}
       <FadeIn delay={0.8}>
         <div className="p-4 border-t border-primary/10 mt-auto">
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/10"
-          >
+          <Link to="/profile">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/10 cursor-pointer"
+            >
             <Avatar className="h-12 w-12">
-              <AvatarImage src={authUser?.profilePic} alt="User Avatar" />
+              <AvatarImage src={authUser?.profilePic || generateAvatarSVG(authUser?.fullName?.split(' ').map(n => n[0]).join('').toUpperCase())} alt="User Avatar" />
               <AvatarFallback>
                 {authUser?.fullName?.split(' ').map(n => n[0]).join('').toUpperCase()}
               </AvatarFallback>
@@ -115,6 +117,7 @@ const Sidebar = () => {
               </div>
             </div>
           </motion.div>
+          </Link>
         </div>
       </FadeIn>
     </motion.aside>
