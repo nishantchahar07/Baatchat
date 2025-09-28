@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react";
+import ReactDOM from "react-dom";
 import { axiosInstance } from "../lib/axios";
 
 const generateAvatarSVG = (initials) => {
-  console.log("Generating SVG for initials:", initials);
   return `data:image/svg+xml;base64,${btoa(`
     <svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="64" cy="64" r="64" fill="#14b8a6"/>
@@ -11,27 +11,23 @@ const generateAvatarSVG = (initials) => {
   `)}`;
 };
 
-const ProfilePictureUpload = ({ currentPic, onUpdate, initials }) => {
+const ProfilePictureUpload = ({ currentPic, onUpdate, initials, user, currentUserId }) => {
   const [uploading, setUploading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
   const fileInputRef = useRef(null);
+  const avatarRef = useRef(null);
+  const dropdownRef = useRef(null);
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
-    console.log("File selected:", file);
     if (!file) return;
 
     setUploading(true);
     try {
       const formData = new FormData();
       formData.append("profilePic", file);
-      console.log("FormData created with file:", file.name, "size:", file.size);
-
-      console.log("Making axios request to upload profile pic");
       const response = await axiosInstance.post("/users/upload-profile-pic", formData);
-      console.log("Upload response:", response.data);
-
-      console.log("Calling onUpdate with:", response.data.profilePic);
       onUpdate(response.data.profilePic);
       alert("Profile picture uploaded successfully");
     } catch (error) {
@@ -47,6 +43,7 @@ const ProfilePictureUpload = ({ currentPic, onUpdate, initials }) => {
   };
 
   const handleReset = async () => {
+    console.log(user, currentUserId);
     try {
       await axiosInstance.put("/users/profile", { profilePic: "" });
       onUpdate("");
@@ -59,7 +56,10 @@ const ProfilePictureUpload = ({ currentPic, onUpdate, initials }) => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (!event.target.closest('.dropdown-container')) {
+      if (
+        avatarRef.current && !avatarRef.current.contains(event.target) &&
+        dropdownRef.current && !dropdownRef.current.contains(event.target)
+      ) {
         setShowDropdown(false);
       }
     };
@@ -71,13 +71,22 @@ const ProfilePictureUpload = ({ currentPic, onUpdate, initials }) => {
     };
   }, [showDropdown]);
 
-  const displayPic = currentPic || generateAvatarSVG(initials || "JD");
-  console.log("ProfilePictureUpload render - currentPic:", currentPic, "initials:", initials, "displayPic starts with:", displayPic.substring(0, 50));
+  useEffect(() => {
+    if (showDropdown && avatarRef.current) {
+      const rect = avatarRef.current.getBoundingClientRect();
+      setPosition({
+        top: rect.bottom + 8 + window.scrollY,
+        left: rect.left + window.scrollX,
+      });
+    }
+  }, [showDropdown]);
 
+  const displayPic = currentPic || generateAvatarSVG(initials || "JD");
   return (
     <div className="flex flex-col items-center gap-4">
       <div className="dropdown-container relative">
         <img
+          ref={avatarRef}
           src={displayPic}
           alt="Profile"
           className="h-32 w-32 rounded-full border-4 border-base-100 shadow-xl cursor-pointer"
@@ -88,21 +97,31 @@ const ProfilePictureUpload = ({ currentPic, onUpdate, initials }) => {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
           </div>
         )}
-        {showDropdown && (
-          <div className="absolute top-full mt-2 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-10">
+        {showDropdown && ReactDOM.createPortal(
+          <div
+            ref={dropdownRef}
+            style={{
+              position: 'absolute',
+              top: position.top,
+              left: position.left,
+              zIndex: 50,
+            }}
+            className="bg-slate-800 border border-slate-600 rounded-md shadow-lg"
+          >
             <button
               onClick={() => { triggerFileInput(); setShowDropdown(false); }}
-              className="block w-full text-left px-4 py-2 text-white hover:bg-teal-600"
+              className="block w-full text-left px-4 py-2 text-slate-200 hover:bg-slate-700"
             >
               Upload Picture
             </button>
             <button
               onClick={() => { handleReset(); setShowDropdown(false); }}
-              className="block w-full text-left px-4 py-2 text-white hover:bg-teal-600"
+              className="block w-full text-left px-4 py-2 text-slate-200 hover:bg-slate-700"
             >
               Reset Picture
             </button>
-          </div>
+          </div>,
+          document.body
         )}
       </div>
       <input

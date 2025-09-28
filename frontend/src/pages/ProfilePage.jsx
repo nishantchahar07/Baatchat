@@ -32,7 +32,7 @@ const ProfilePage = () => {
   const { authUser } = useAuthUser();
 
   const { data: user, isLoading, error } = useQuery({
-    queryKey: ["userProfile", id || "current"],
+    queryKey: ["userProfile", id || (authUser?._id) || "current"],
     queryFn: async () => {
       if (id) {
         const response = await axiosInstance.get(`/users/${id}`);
@@ -45,6 +45,8 @@ const ProfilePage = () => {
     enabled: true,
   });
 
+  console.log("ProfilePage - user after query:", user);
+
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -56,6 +58,7 @@ const ProfilePage = () => {
   });
   const [updating, setUpdating] = useState(false);
 
+  const currentUserId = user?._id;
   const isOwnProfile = user?._id === authUser?._id;
   console.log("ProfilePage - user:", user, "authUser:", authUser, "isOwnProfile:", isOwnProfile);
 
@@ -152,11 +155,13 @@ const ProfilePage = () => {
                   transition={{ type: "spring", stiffness: 300 }}
                 >
                   {isOwnProfile ? (
-                    <ProfilePictureUpload
-                      currentPic={user.profilePic}
-                      onUpdate={handleProfilePicUpdate}
-                      initials={user.fullName?.split(' ').map(n => n[0]).join('').toUpperCase() || "JD"}
-                    />
+                     <ProfilePictureUpload
+                       currentPic={user.profilePic}
+                       onUpdate={handleProfilePicUpdate}
+                       initials={user.fullName?.split(' ').map(n => n[0]).join('').toUpperCase() || "JD"}
+                       user={user}
+                       currentUserId={currentUserId}
+                     />
                   ) : (
                     <Avatar className="h-32 w-32 border-4 border-base-100 shadow-xl">
                       <AvatarImage src={user.profilePic || generateAvatarSVG(user.fullName?.split(' ').map(n => n[0]).join('').toUpperCase() || "JD")} alt={user.fullName} />
