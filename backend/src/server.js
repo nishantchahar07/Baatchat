@@ -17,7 +17,7 @@ const __dirname = path.resolve();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174", "https://baatchat-seven.vercel.app"],
+    origin: ["http://localhost:5173", "http://localhost:5174", "https://baatchat-seven.vercel.app", process.env.FRONTEND_URL],
     credentials: true, // allow frontend to send cookies
   })
 );
