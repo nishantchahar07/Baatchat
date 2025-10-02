@@ -11,13 +11,13 @@ import chatRoutes from "./routes/chat.route.js";
 import { connectDB } from "./lib/db.js";
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5001;
 
 const __dirname = path.resolve();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174", "https://baatchat-seven.vercel.app", process.env.FRONTEND_URL],
+    origin: ["http://localhost:5173", "http://localhost:5174", "https://baatchat-seven.vercel.app", "https://baatchat-hdwr.onrender.com", process.env.FRONTEND_URL],
     credentials: true, // allow frontend to send cookies
   })
 );
@@ -29,8 +29,29 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/chat", chatRoutes);
 
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-  connectDB();
+// Root route for server health checks
+app.get("/", (req, res) => {
+  res.status(200).json({
+    status: "OK",
+    message: "BaatChat server is running",
+    timestamp: new Date().toISOString(),
+  });
 });
+
+
+// Initialize server with database connection
+const startServer = async () => {
+  try {
+    await connectDB();
+    console.log("Database connected successfully");
+
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+};
+
+startServer();
