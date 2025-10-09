@@ -7,6 +7,7 @@ import path from "path";
 import authRoutes from "./routes/auth.route.js";
 import userRoutes from "./routes/user.route.js";
 import chatRoutes from "./routes/chat.route.js";
+import videoRoutes from "./routes/video.route.js";
 
 import { connectDB } from "./lib/db.js";
 
@@ -17,7 +18,7 @@ const __dirname = path.resolve();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174", "https://baatchat-seven.vercel.app", "https://baatchat-hdwr.onrender.com", process.env.FRONTEND_URL],
+    origin: ["http://localhost:5173", "http://localhost:5174", "https://baatchat-seven.vercel.app", "https://baatchat-hdrw.onrender.com", process.env.FRONTEND_URL],
     credentials: true, // allow frontend to send cookies
   })
 );
@@ -28,6 +29,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/video", videoRoutes);
 
 // Root route for server health checks
 app.get("/", (req, res) => {
