@@ -1,27 +1,40 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { StreamCall, StreamVideo, StreamVideoClient, CallControls, SpeakerLayout } from "@stream-io/video-react-sdk";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import useAuthUser from "../hooks/useAuthUser";
-import { getStreamToken } from "../lib/api";
+import { getStreamToken, createVideoCall, getVideoToken } from "../lib/api";
 
 const CallPage = () => {
-  const { id: callId } = useParams();
-  const { authUser } = useAuthUser();
-  const [client, setClient] = useState(null);
-  const [call, setCall] = useState(null);
+   const { id: callId } = useParams();
+   const { authUser } = useAuthUser();
+   const [client, setClient] = useState(null);
+   const [call, setCall] = useState(null);
+   const queryClient = useQueryClient();
 
-  const { data: token } = useQuery({
-    queryKey: ["streamToken"],
-    queryFn: getStreamToken,
-    enabled: !!authUser,
-  });
+   const { data: chatToken } = useQuery({
+     queryKey: ["streamToken"],
+     queryFn: getStreamToken,
+     enabled: !!authUser,
+   });
+
+   // Create call first
+   const { mutateAsync: createCall, isLoading: isCreatingCall } = useMutation({
+     mutationFn: createVideoCall,
+   });
+
+   // Get video token after call is created
+   const { data: videoToken, isLoading: isLoadingVideoToken } = useQuery({
+     queryKey: ["videoToken", callId],
+     queryFn: () => getVideoToken(callId),
+     enabled: !!callId && !isCreatingCall,
+   });
 
   useEffect(() => {
-    if (token && authUser && !client) {
+    if (videoToken && authUser && !client) {
       const videoClient = new StreamVideoClient({
         apiKey: import.meta.env.VITE_STREAM_API_KEY,
-        token: token.token,
+        token: videoToken.token,
         user: {
           id: authUser._id,
           name: authUser.fullName,
@@ -31,7 +44,13 @@ const CallPage = () => {
 
       setClient(videoClient);
     }
-  }, [token, authUser, client]);
+  }, [videoToken, authUser, client]);
+
+  useEffect(() => {
+    if (callId && !isCreatingCall && authUser) {
+      createCall(callId);
+    }
+  }, [callId, isCreatingCall, createCall, authUser]);
 
   useEffect(() => {
     if (client && callId) {
@@ -45,12 +64,14 @@ const CallPage = () => {
     }
   }, [client, callId]);
 
-  if (!client || !call) {
+  if (!client || !call || isCreatingCall || isLoadingVideoToken) {
     return (
       <div className="h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="loading loading-spinner loading-lg text-primary"></div>
-          <p className="mt-4">Connecting to call...</p>
+          <p className="mt-4">
+            {isCreatingCall ? "Creating call..." : "Connecting to call..."}
+          </p>
         </div>
       </div>
     );

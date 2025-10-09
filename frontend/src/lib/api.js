@@ -1,4 +1,4 @@
-import { axiosInstance } from "./axios";
+  import { axiosInstance } from "./axios";
 
 export const signup = async (signupData) => {
   const response = await axiosInstance.post("/auth/signup", signupData);
@@ -69,6 +69,16 @@ export async function rejectFriendRequest(requestId) {
 }
 
 export async function getStreamToken() {
-  const response = await axiosInstance.get("/chat/token");
-  return response.data;
-}
+   const response = await axiosInstance.get("/chat/token");
+   return response.data;
+ }
+
+export async function createVideoCall(callId) {
+   const response = await axiosInstance.post("/video/create", { callId });
+   return response.data;
+ }
+
+export async function getVideoToken(callId) {
+   const response = await axiosInstance.get(`/video/token/${callId}`);
+   return response.data;
+ }
