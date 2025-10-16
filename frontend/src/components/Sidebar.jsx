@@ -1,15 +1,18 @@
 import { Link, useLocation } from "react-router";
 import useAuthUser from "../hooks/useAuthUser";
+import useLogout from "../hooks/useLogout";
 import { generateAvatarSVG } from "../lib/utils";
-import { BellIcon, HomeIcon, ShipWheelIcon, UsersIcon, Sparkles } from "lucide-react";
+import { BellIcon, HomeIcon, ShipWheelIcon, UsersIcon, Sparkles, LogOut } from "lucide-react";
 import { motion } from "framer-motion";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/Avatar";
+import { Button } from "./ui/Button";
 import FadeIn from "./animations/FadeIn";
 import ThemeSelector from "./ThemeSelector";
 
 const Sidebar = () => {
   const { authUser, isLoading } = useAuthUser();
   const location = useLocation();
+  const { logoutMutation, isPending } = useLogout();
   const currentPath = location.pathname;
 
   const navItems = [
@@ -93,7 +96,7 @@ const Sidebar = () => {
 
       {/* USER PROFILE SECTION */}
       <FadeIn delay={0.8}>
-        <div className="p-4 border-t border-primary/10 mt-auto">
+        <div className="p-4 border-t border-primary/10 mt-auto space-y-3">
           {isLoading ? (
             <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/10">
               <div className="h-12 w-12 rounded-full bg-gray-300 animate-pulse"></div>
@@ -103,30 +106,41 @@ const Sidebar = () => {
               </div>
             </div>
           ) : (
-            <Link to="/profile">
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/10 cursor-pointer"
-              >
-                <Avatar className="h-12 w-12" name={authUser?.fullName}>
-                  <AvatarImage src={authUser?.profilePic || generateAvatarSVG(authUser?.fullName)} alt="User Avatar" />
-                  <AvatarFallback name={authUser?.fullName}>
-                    {authUser?.fullName?.split(' ').map(n => n[0]).join('').toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm truncate">{authUser?.fullName}</p>
-                  <div className="flex items-center gap-2">
-                    <motion.div
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      className="w-2 h-2 rounded-full bg-success"
-                    />
-                    <p className="text-xs text-success font-medium">Online</p>
+            <>
+              <Link to="/profile">
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/10 cursor-pointer"
+                >
+                  <Avatar className="h-12 w-12" name={authUser?.fullName}>
+                    <AvatarImage src={authUser?.profilePic || generateAvatarSVG(authUser?.fullName)} alt="User Avatar" />
+                    <AvatarFallback name={authUser?.fullName}>
+                      {authUser?.fullName?.split(' ').map(n => n[0]).join('').toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm truncate">{authUser?.fullName}</p>
+                    <div className="flex items-center gap-2">
+                      <motion.div
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="w-2 h-2 rounded-full bg-success"
+                      />
+                      <p className="text-xs text-success font-medium">Online</p>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            </Link>
+                </motion.div>
+              </Link>
+              <Button
+                onClick={logoutMutation}
+                disabled={isPending}
+                variant="outline"
+                className="w-full flex items-center gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                {isPending ? "Logging out..." : "Logout"}
+              </Button>
+            </>
           )}
         </div>
       </FadeIn>
