@@ -14,13 +14,18 @@ const useLogout = () => {
   } = useMutation({
     mutationFn: logoutApi,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["authUser"] });
-      queryClient.setQueryData(["authUser"], null);
+      // Clear all cached data to ensure clean logout
+      queryClient.clear();
+
+      // Show success message
       toast.success("Logged out successfully");
-      navigate("/login");
+
+      // Navigate to login page
+      navigate("/login", { replace: true });
     },
-    onError: () => {
-      toast.error("Logout failed");
+    onError: (error) => {
+      console.error("Logout error:", error);
+      toast.error("Logout failed. Please try again.");
     },
   });
 
